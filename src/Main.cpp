@@ -129,10 +129,10 @@ main(void)
 
     ID3D11VertexShader      *VS;
     ID3D11PixelShader       *PS;
-	ID3D11ComputeShader		*CS;
+    ID3D11ComputeShader     *CS;
     ID3DBlob                *VSBlob,
                             *PSBlob,
-							*CSBlob;
+                            *CSBlob;
 
 
     Hr = D3DReadFileToBlob(L"Vertex.hlsl.cso", &VSBlob);
@@ -148,51 +148,51 @@ main(void)
     ///////////////////////////////////////////////////////////////////////////
     // Buffer Setup
 
-    ID3D11Buffer               	*VertexBuffer,
-								*IndexBuffer,
-								*TexCoordBuffer;
+    ID3D11Buffer                *VertexBuffer,
+                                *IndexBuffer,
+                                *TexCoordBuffer;
     D3D11_BUFFER_DESC           VertexBufferDesc = {0},
-								IndexBufferDesc = {0},
-								TexCoordBufferDesc = {0};
+                                IndexBufferDesc = {0},
+                                TexCoordBufferDesc = {0};
     D3D11_SUBRESOURCE_DATA      VertexBufferData = {0},
-								IndexBufferData = {0},
-								TexCoordBufferData = {0};
+                                IndexBufferData = {0},
+                                TexCoordBufferData = {0};
     UINT                        Stride,
                                 Offset;
     FLOAT                       Vertices[] =
     {
-		-0.5f, -0.5f, 0.5f,
-		-0.5f, 0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
+        -0.5f, -0.5f, 0.5f,
+        -0.5f, 0.5f, 0.5f,
+        0.5f, 0.5f, 0.5f,
+        0.5f, -0.5f, 0.5f,
     };
-	DWORD						Indices[] =
-	{
-		0, 1, 2,
-		0, 2, 3
-	};
-	FLOAT						TexCoords[] =
-	{
-		0.0f, 1.0f,
-		0.0f, 0.0f,
-		1.0f, 0.0f,
-		1.0f, 1.0f
-	};
+    DWORD                       Indices[] =
+    {
+        0, 1, 2,
+        0, 2, 3
+    };
+    FLOAT                       TexCoords[] =
+    {
+        0.0f, 1.0f,
+        0.0f, 0.0f,
+        1.0f, 0.0f,
+        1.0f, 1.0f
+    };
 
 
     VertexBufferDesc.ByteWidth = sizeof(Vertices);
     VertexBufferDesc.BindFlags =  D3D11_BIND_VERTEX_BUFFER;
-	VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    VertexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     VertexBufferData.pSysMem = Vertices;
 
     IndexBufferDesc.ByteWidth = sizeof(Indices);
     IndexBufferDesc.BindFlags =  D3D11_BIND_INDEX_BUFFER;
-	IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    IndexBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     IndexBufferData.pSysMem = Indices;
 
     TexCoordBufferDesc.ByteWidth = sizeof(TexCoords);
     TexCoordBufferDesc.BindFlags =  D3D11_BIND_VERTEX_BUFFER;
-	TexCoordBufferDesc.Usage = D3D11_USAGE_DEFAULT;
+    TexCoordBufferDesc.Usage = D3D11_USAGE_DEFAULT;
     TexCoordBufferData.pSysMem = TexCoords;
 
     Hr = Device->CreateBuffer(&VertexBufferDesc, &VertexBufferData, &VertexBuffer);
@@ -205,7 +205,7 @@ main(void)
     Stride = 2 * sizeof(FLOAT);
     Context->IASetVertexBuffers(1, 1, &TexCoordBuffer, &Stride, &Offset);
 
-	Context->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
+    Context->IASetIndexBuffer(IndexBuffer, DXGI_FORMAT_R32_UINT, 0);
 
     ///////////////////////////////////////////////////////////////////////////
     // Input Layout Setup
@@ -227,107 +227,107 @@ main(void)
     Context->IASetInputLayout(Layout);
     Context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	///////////////////////////////////////////////////////////////////////////
-	// Texture Setup
+    ///////////////////////////////////////////////////////////////////////////
+    // Texture Setup
 
-	ID3D11Texture2D						*Texture,
-										*Copy,
-										*Stage;
-	D3D11_TEXTURE2D_DESC				TextureDesc = {0},
-										StagingDesc = {0};
-	D3D11_SUBRESOURCE_DATA				TextureSubData = {0};
-	BYTE								*TextureData;
-	INT									Width, Height, Nr;
-	D3D11_SHADER_RESOURCE_VIEW_DESC		TextureSRVDesc;
-	D3D11_UNORDERED_ACCESS_VIEW_DESC	CopyUAVDesc;
-	ID3D11ShaderResourceView			*TextureSRV,
-										*CopySRV,
-										*NullSRV[] = {NULL};
-	ID3D11UnorderedAccessView			*TextureUAV,
-										*CopyUAV,
-										*NullUAV[] = {NULL};
-	ID3D11SamplerState					*TextureSampler;
-	D3D11_SAMPLER_DESC					TextureSamplerDesc;
+    ID3D11Texture2D                     *Texture,
+                                        *Copy,
+                                        *Stage;
+    D3D11_TEXTURE2D_DESC                TextureDesc = {0},
+                                        StagingDesc = {0};
+    D3D11_SUBRESOURCE_DATA              TextureSubData = {0};
+    BYTE                                *TextureData;
+    INT                                 Width, Height, Nr;
+    D3D11_SHADER_RESOURCE_VIEW_DESC     TextureSRVDesc;
+    D3D11_UNORDERED_ACCESS_VIEW_DESC    CopyUAVDesc;
+    ID3D11ShaderResourceView            *TextureSRV,
+                                        *CopySRV,
+                                        *NullSRV[] = {NULL};
+    ID3D11UnorderedAccessView           *TextureUAV,
+                                        *CopyUAV,
+                                        *NullUAV[] = {NULL};
+    ID3D11SamplerState                  *TextureSampler;
+    D3D11_SAMPLER_DESC                  TextureSamplerDesc;
 
 
-	TextureData = stbi_load("danteh.png", &Width, &Height, &Nr, 4);
-	TextureDesc.Width = Width;
-	TextureDesc.Height = Height;
-	TextureDesc.MipLevels = 1;
-	TextureDesc.ArraySize = 1;
-	TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	TextureDesc.SampleDesc.Count = 1;
-	TextureDesc.SampleDesc.Quality = 0;
-	TextureDesc.Usage = D3D11_USAGE_DEFAULT;
-	TextureDesc.CPUAccessFlags = 0;
-	TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
-	TextureSubData.pSysMem = TextureData;
-	TextureSubData.SysMemPitch = Width * 4;
+    TextureData = stbi_load("danteh.png", &Width, &Height, &Nr, 4);
+    TextureDesc.Width = Width;
+    TextureDesc.Height = Height;
+    TextureDesc.MipLevels = 1;
+    TextureDesc.ArraySize = 1;
+    TextureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    TextureDesc.SampleDesc.Count = 1;
+    TextureDesc.SampleDesc.Quality = 0;
+    TextureDesc.Usage = D3D11_USAGE_DEFAULT;
+    TextureDesc.CPUAccessFlags = 0;
+    TextureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_UNORDERED_ACCESS;
+    TextureSubData.pSysMem = TextureData;
+    TextureSubData.SysMemPitch = Width * 4;
 
-	StagingDesc.Width = Width;
-	StagingDesc.Height = Height;
-	StagingDesc.MipLevels = 1;
-	StagingDesc.ArraySize = 1;
-	StagingDesc.SampleDesc.Count = 1;
-	StagingDesc.SampleDesc.Quality = 0;
-	StagingDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	StagingDesc.Usage = D3D11_USAGE_STAGING;
-	StagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
+    StagingDesc.Width = Width;
+    StagingDesc.Height = Height;
+    StagingDesc.MipLevels = 1;
+    StagingDesc.ArraySize = 1;
+    StagingDesc.SampleDesc.Count = 1;
+    StagingDesc.SampleDesc.Quality = 0;
+    StagingDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    StagingDesc.Usage = D3D11_USAGE_STAGING;
+    StagingDesc.CPUAccessFlags = D3D11_CPU_ACCESS_READ | D3D11_CPU_ACCESS_WRITE;
 
-	Hr = Device->CreateTexture2D(&TextureDesc, &TextureSubData, &Texture);
-	Hr = Device->CreateTexture2D(&TextureDesc, NULL, &Copy);
-	Hr = Device->CreateTexture2D(&StagingDesc, NULL, &Stage);
+    Hr = Device->CreateTexture2D(&TextureDesc, &TextureSubData, &Texture);
+    Hr = Device->CreateTexture2D(&TextureDesc, NULL, &Copy);
+    Hr = Device->CreateTexture2D(&StagingDesc, NULL, &Stage);
 
-	TextureSRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	TextureSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	TextureSRVDesc.Texture2D.MipLevels = 1;
-	TextureSRVDesc.Texture2D.MostDetailedMip = 0;
+    TextureSRVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    TextureSRVDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+    TextureSRVDesc.Texture2D.MipLevels = 1;
+    TextureSRVDesc.Texture2D.MostDetailedMip = 0;
 
-	ZeroMemory(&TextureSamplerDesc, sizeof(TextureSamplerDesc));
-	TextureSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
-	TextureSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
-	TextureSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
-	TextureSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
-	TextureSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
-	TextureSamplerDesc.MinLOD = 0;
-	TextureSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    ZeroMemory(&TextureSamplerDesc, sizeof(TextureSamplerDesc));
+    TextureSamplerDesc.Filter = D3D11_FILTER_MIN_MAG_MIP_LINEAR;
+    TextureSamplerDesc.AddressU = D3D11_TEXTURE_ADDRESS_WRAP;
+    TextureSamplerDesc.AddressV = D3D11_TEXTURE_ADDRESS_WRAP;
+    TextureSamplerDesc.AddressW = D3D11_TEXTURE_ADDRESS_WRAP;
+    TextureSamplerDesc.ComparisonFunc = D3D11_COMPARISON_NEVER;
+    TextureSamplerDesc.MinLOD = 0;
+    TextureSamplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
 
-	CopyUAVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	CopyUAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
-	CopyUAVDesc.Texture2D.MipSlice = 0;
+    CopyUAVDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+    CopyUAVDesc.ViewDimension = D3D11_UAV_DIMENSION_TEXTURE2D;
+    CopyUAVDesc.Texture2D.MipSlice = 0;
 
-	Hr = Device->CreateShaderResourceView(Texture, &TextureSRVDesc, &TextureSRV);
-	Hr = Device->CreateShaderResourceView(Copy, &TextureSRVDesc, &CopySRV);
-	Hr = Device->CreateSamplerState(&TextureSamplerDesc, &TextureSampler);
-	Hr = Device->CreateUnorderedAccessView(Texture, &CopyUAVDesc, &TextureUAV);
-	Hr = Device->CreateUnorderedAccessView(Copy, &CopyUAVDesc, &CopyUAV);
+    Hr = Device->CreateShaderResourceView(Texture, &TextureSRVDesc, &TextureSRV);
+    Hr = Device->CreateShaderResourceView(Copy, &TextureSRVDesc, &CopySRV);
+    Hr = Device->CreateSamplerState(&TextureSamplerDesc, &TextureSampler);
+    Hr = Device->CreateUnorderedAccessView(Texture, &CopyUAVDesc, &TextureUAV);
+    Hr = Device->CreateUnorderedAccessView(Copy, &CopyUAVDesc, &CopyUAV);
 
-	Context->CSSetShaderResources(0, 1, &TextureSRV);
-	Context->CSSetUnorderedAccessViews(0, 1, &CopyUAV, NULL);
-	Context->Dispatch(Width, Height, 1);
-	Context->CSSetUnorderedAccessViews(0, 1, NullUAV, NULL);
-	Context->CSSetShaderResources(0, 1, NullSRV);
+    Context->CSSetShaderResources(0, 1, &TextureSRV);
+    Context->CSSetUnorderedAccessViews(0, 1, &CopyUAV, NULL);
+    Context->Dispatch(Width, Height, 1);
+    Context->CSSetUnorderedAccessViews(0, 1, NullUAV, NULL);
+    Context->CSSetShaderResources(0, 1, NullSRV);
 
-	Context->PSSetShaderResources(0, 1, &CopySRV);
-	Context->PSSetSamplers(0, 1, &TextureSampler);
+    Context->PSSetShaderResources(0, 1, &CopySRV);
+    Context->PSSetSamplers(0, 1, &TextureSampler);
 
     ///////////////////////////////////////////////////////////////////////////
     // Copymapping
 
-	D3D11_MAPPED_SUBRESOURCE		Mapped = {0};
-	FLOAT							*Buffer;
+    D3D11_MAPPED_SUBRESOURCE        Mapped = {0};
+    FLOAT                           *Buffer;
 
 
-	Context->CopyResource(Stage, Copy);
+    Context->CopyResource(Stage, Copy);
 
-	Context->Map(Stage, 0, D3D11_MAP_READ, 0, &Mapped);
-		Buffer = (FLOAT *)malloc(Mapped.RowPitch * Height * sizeof(FLOAT));
-		memcpy(Buffer, Mapped.pData, (Mapped.RowPitch * Height));
-	Context->Unmap(Stage, 0);
+    Context->Map(Stage, 0, D3D11_MAP_READ, 0, &Mapped);
+        Buffer = (FLOAT *)malloc(Mapped.RowPitch * Height * sizeof(FLOAT));
+        memcpy(Buffer, Mapped.pData, (Mapped.RowPitch * Height));
+    Context->Unmap(Stage, 0);
 
-	stbi_write_bmp("foo.bmp", Mapped.RowPitch / 4, Height, 4, Buffer);
+    stbi_write_bmp("foo.bmp", Mapped.RowPitch / 4, Height, 4, Buffer);
 
-	free(Buffer);
+    free(Buffer);
 
     ///////////////////////////////////////////////////////////////////////////
     // Main Loop
